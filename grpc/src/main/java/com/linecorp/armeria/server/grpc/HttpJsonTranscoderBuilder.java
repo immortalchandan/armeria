@@ -109,7 +109,8 @@ final class HttpJsonTranscoderBuilder {
         }
 
         final io.grpc.ServiceDescriptor grpcServiceDescriptor = serviceDefinition.getServiceDescriptor();
-        final GrpcJsonMarshaller jsonMarshaller = buildJsonMarshaller(grpcServiceDescriptor);
+        final GrpcJsonMarshaller jsonMarshaller =
+                protoSerialization ? buildJsonMarshaller(grpcServiceDescriptor) : null;
         for (ServerMethodDefinition<?, ?> methodDefinition : serviceDefinition.getMethods()) {
             final Descriptors.MethodDescriptor methodDesc = methodDescriptor(methodDefinition);
             if (methodDesc == null) {
@@ -158,7 +159,8 @@ final class HttpJsonTranscoderBuilder {
     }
 
     private void serviceDescriptor(io.grpc.ServiceDescriptor serviceDescriptor) {
-        final GrpcJsonMarshaller jsonMarshaller = buildJsonMarshaller(serviceDescriptor);
+        final GrpcJsonMarshaller jsonMarshaller =
+                protoSerialization ? buildJsonMarshaller(serviceDescriptor) : null;
         for (io.grpc.MethodDescriptor<?, ?> grpcMethodDescriptor : serviceDescriptor.getMethods()) {
             final Descriptors.MethodDescriptor methodDesc = methodDescriptor(grpcMethodDescriptor);
             if (methodDesc == null) {
@@ -521,12 +523,13 @@ final class HttpJsonTranscoderBuilder {
         final ServerMethodDefinition<?, ?> definition;
         final Descriptors.MethodDescriptor descriptor;
         final io.grpc.MethodDescriptor<?, ?> grpcMethodDescriptor;
+        @Nullable
         final GrpcJsonMarshaller jsonMarshaller;
 
         HttpJsonGrpcMethod(@Nullable ServerMethodDefinition<?, ?> definition,
                            Descriptors.MethodDescriptor descriptor,
                            io.grpc.MethodDescriptor<?, ?> grpcMethodDescriptor,
-                           GrpcJsonMarshaller jsonMarshaller) {
+                           @Nullable GrpcJsonMarshaller jsonMarshaller) {
             this.definition = definition;
             this.descriptor = descriptor;
             this.grpcMethodDescriptor = grpcMethodDescriptor;
